@@ -18,3 +18,27 @@ let getCalcResults = async (input) => {
 };
 
 module.exports = getCalcResults;
+
+// app.get("getCalcResults", async (req, res) => {
+//   const test = async (_) => {
+//     return { name: "dany" };
+//   };
+
+//   test().then((value) => {
+//     console.log("in index " + value); // 1
+//     res.send({ result: value });
+//   });
+// });
+
+// app.post("/postCalcResults", jsonParser, async (req, res) => {
+//   const test = async (_) => {
+//     console.log("in post");
+//     console.log(req.body);
+//     return getCalcResults(JSON.stringify(req.body));
+//   };
+
+//   test().then((value) => {
+//     console.log(value);
+//     res.send(value);
+//   });
+// });

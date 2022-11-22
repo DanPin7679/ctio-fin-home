@@ -1,52 +1,28 @@
 const express = require("express");
+const mongoose = require("mongoose")
 const cors = require("cors");
-let MongoClient = require("mongodb").MongoClient;
 const bodyParser = require("body-parser");
-const getCalcResults = require("./routes/getCalcResults");
-// const categories = require(/routes/cats.js)
-const dotenv = require("dotenv");
-const { response } = require("express");
+const dotenv = require("dotenv").config();
 
 const app = express();
-app.use(cors());
-var jsonParser = bodyParser.json();
-dotenv.config();
+const qRoutes = require("./routes/qRoutes")
+const catRoutes = require("./routes/catRoutes")
 const port = process.env.PORT || 8080;
 
-// app.get("getCalcResults", async (req, res) => {
-//   const test = async (_) => {
-//     return { name: "dany" };
-//   };
+app.use(cors());
+app.use(express.json())
 
-//   test().then((value) => {
-//     console.log("in index " + value); // 1
-//     res.send({ result: value });
-//   });
-// });
+app.use("/api/categories", catRoutes);
+app.use("/api/questions", qRoutes);
 
-app.post("/postCalcResults", jsonParser, async (req, res) => {
-  const test = async (_) => {
-    console.log("in post");
-    console.log(req.body);
-    return getCalcResults(JSON.stringify(req.body));
-  };
+mongoose.connect(process.env.MONGO_URI)
+  .then(()=>{
+    console.log(`connected to Mongo!`);
+    app.listen(port, () => {
+      console.log(`listening on port ${port}!`);
+    });
+  })
+  .catch((error)=>{
+  console.log(error)
+  })
 
-  test().then((value) => {
-    console.log(value);
-    res.send(value);
-  });
-});
-
-// app.get("api/questions", (req, res) => {
-//   res.send(JSON.stringify(questions));
-// });
-
-// app.get("api/categories", (req, res) => {
-//   res.send(JSON.stringify(categories));
-// });
-app.use("/api/categories", require("./routes/catRoutes"));
-app.use("/api/questions", require("./routes/questionRoutes"));
-
-app.listen(port, () => {
-  console.log(`listening on port ${port}`);
-});
