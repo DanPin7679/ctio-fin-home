@@ -21,7 +21,7 @@ router.get("/", (req, res) => {
       .toArray(function (err, result) {
         if (err) throw err;
         console.log(result);
-        res.status("200").json(result);
+        res.status(200).json(result);
         db.close();
       });
   });
