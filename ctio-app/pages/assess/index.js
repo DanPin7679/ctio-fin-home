@@ -2,20 +2,37 @@ import Head from "next/head";
 import { useState, useEffect } from "react";
 import styles from "../../styles/Home.module.css";
 
-export default function Assess() {
-  const [data, setData] = useState(null);
-  const [isLoading, setLoading] = useState(false);
-  useEffect(() => {
-    setLoading(true);
-    fetch("http://localhost:8000/api/questions")
-      .then((res) => res.json())
-      .then((data) => {
-        setData(data);
-        setLoading(false);
-      });
-  }, []);
-  if (isLoading) return <p>Loading...</p>;
-  if (!data) return <p>No profile data</p>;
+export const getStaticProps = async ()=>{
+  const res = await fetch("http://localhost:8000/api/questions")
+  const data = await res.json()
+  
+  return {
+    props: {questions: data}
+  }
+}
+
+export default function Assess({questions}) {
+  const [q_id, setQid] = useState(1);
+  const [q, setQ] = useState(questions[0]);
+
+  const questionHandler = (n)=>{
+    const max = questions.length
+    var new_q_id = Math.max(Math.min(q_id + n, max), 1)
+    setQid(new_q_id)
+    setQ(questions[new_q_id - 1])
+  }
+  // const [isLoading, setLoading] = useState(false);
+  // useEffect(() => {
+  //   setLoading(true);
+  //   fetch("http://localhost:8000/api/questions")
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       setData(data);
+  //       setLoading(false);
+  //     });
+  // }, []);
+  // if (isLoading) return <p>Loading...</p>;
+  // if (!data) return <p>No profile data</p>;
   return (
     <div className={styles.container}>
       <Head>
@@ -25,17 +42,20 @@ export default function Assess() {
 
       <main className={styles.main}>
         <h1 className={styles.title}>Welcome to Learn</h1>
-        <div className={styles.grid}>
-          {data.map((q) => (
-            <a
-              href="https://nextjs.org/docs"
-              className={styles.card}
-              key={q.id}
-            >
-              <h2>{q.category}</h2>
-              <p>{q.question}</p>
-            </a>
-          ))}
+        <div className="flex flex-col">
+          <div className="space-y-5">
+            <h1>Question {q_id}</h1>
+            <h2>{q.category}</h2>
+            <h2>{q.question}</h2>
+                {q.answers.map((a)=>(
+                  <div className="flex flex-row justify-between"><h2>{a}</h2><div className={`${a==="A"?"bg-orange-500":"border-2"} border-orange-400 h-4 w-4`}></div></div>
+                ))}
+          </div>
+          <div className="flex flex-row justify-between w-96">
+            <button onClick={() => questionHandler(-1)} className="bg-blue-500 h-10 w-1/10">Previous</button>
+            <div className="w-8/10">d</div>
+            <button onClick={() => questionHandler(1)} className="bg-blue-500 h-10 w-1/10">Next</button>
+          </div>
         </div>
       </main>
     </div>
